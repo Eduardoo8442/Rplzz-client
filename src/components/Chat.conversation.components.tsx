@@ -15,7 +15,7 @@ export default function Conversation() {
      setChat(current => [...current, { name: name, image: image, message: message }]);
     }
     addObject('Eduardo8442', '/images/profile.png', 'eae');
-    addObject('RafaelStonks', '/images/profile.png', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoi');
+    addObject('RafaelStonks', '/images/profile.png', 'oi');
 
 }, []);
     return(
@@ -25,8 +25,8 @@ export default function Conversation() {
               <div className="inline-flex justify-center">
                   <img className="w-8 h-8 mr-2 rounded-full" src={message.image} />
                            <div>
-                        {message.name}
-                   <p className="break-all">: {message.message}</p>
+                     <p>{message.name}:</p>
+                   <p className="break-all">{message.message}</p>
               </div>
            </div>
 

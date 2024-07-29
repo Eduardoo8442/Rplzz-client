@@ -28,6 +28,9 @@ export default function SideBar() {
         router.push('/chat');
         }
     }
+    function handleConfig() {
+        router.push('/config');
+    }
     function handleClickAmigos() {
         router.push('/home');
     }
@@ -63,7 +66,7 @@ export default function SideBar() {
           <div className="absolute bottom-0 bg-gray-900 w-full h-12 flex justify-center items-center">
           <img className="w-8 h-8  mr-2 rounded-full" src='/images/profile.png'/>
            <p className="roboto">Seu nick</p>
-           <GrConfigure className="absolute right-2 size-5"/>
+           <GrConfigure onClick={handleConfig} className="absolute right-2 size-5 cursor-pointer hover:text-gray-500"/>
            <FaMicrophone className="absolute right-8 size-5 text-red-600"/>
            <FaHeadphones className="absolute right-14 size-5 text-red-600"/>
           </div>
