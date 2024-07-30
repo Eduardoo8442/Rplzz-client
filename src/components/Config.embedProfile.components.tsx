@@ -1,10 +1,21 @@
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { useRouter } from "next/router";
+import React, { Dispatch, SetStateAction } from 'react';
 
-export default function EmbedProfile() {
+interface EmbedProfileProps {
+  setChangeEmail: Dispatch<SetStateAction<boolean>>;
+  setChangePassWord: Dispatch<SetStateAction<boolean>>;
+}
+export default function EmbedProfile({ setChangeEmail, setChangePassWord}: EmbedProfileProps) {
     const router = useRouter();
     function handleClick() {
         router.push('/home');
+    }
+    function handleEmail() {
+        setChangeEmail(true);
+    }
+    function handlePassWord() {
+        setChangePassWord(true);
     }
     return (
         <div className="bg-gray-800 p-6 rounded-lg border-r-4 border-yellow-500 relative shadow-lg">
@@ -26,14 +37,14 @@ export default function EmbedProfile() {
                     <p className="text-white mb-2">Email:</p>
                     <div className="relative">
                         <p className="text-gray-400 mb-2  ">Meuemail@gmail.com</p>
-                        <button className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
+                        <button onClick={handleEmail} className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
                     </div>
                 </div>
                 <div>
                     <p className="text-white mb-2">Senha:</p>
                     <div className="relative">
                         <p className="text-gray-400 mb-2">***********</p>
-                        <button className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
+                        <button onClick={handlePassWord} className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
                     </div>
                 </div>
             </div>
