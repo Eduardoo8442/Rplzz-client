@@ -1,41 +1,42 @@
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { useRouter } from "next/router";
+
 export default function EmbedProfile() {
     const router = useRouter();
     function handleClick() {
         router.push('/home');
     }
-    return(
- <div className="bg-gray-800 pl-10 pr-60 rounded border-r-4 border-yellow-500 relative">
- <IoIosCloseCircleOutline  onClick={handleClick} className="absolute text-white cursor-pointer size-10 right-0 hover:text-gray-400"/>
+    return (
+        <div className="bg-gray-800 p-6 rounded-lg border-r-4 border-yellow-500 relative shadow-lg">
+            <IoIosCloseCircleOutline 
+                onClick={handleClick} 
+                className="absolute text-white cursor-pointer text-2xl right-4 top-4 hover:text-gray-400 transition duration-200"
+            />
 
-<div className="flex items-center pt-2">
-<img className="w-20 h-20  mr-2 rounded-full" src='/images/profile.png'/>
-<div className="m-2 ml-10">
-    <p className="text-3xl geist text-white">Seu Nick</p>
-    <p>seu id: 000000</p>
-</div>
-</div>
+            <div className="flex items-center pt-2">
+                <img className="w-20 h-20 mr-4 rounded-full" src='/images/profile.png' alt="Profile"/>
+                <div className="ml-4">
+                    <p className="text-3xl font-semibold text-white">Seu Nick</p>
+                    <p className="text-gray-400">seu id: 000000</p>
+                </div>
+            </div>
 
-
-<div className="bg-gray-950 mt-10 mb-10 p-2 rounded-xl">
-  <div>
-       <p className="text-white roboto ml-2">Email:</p>
-       <div className="relative">
-         <p className="text-gray-400 geist ml-2">Meuemail@gmail.com</p>
-         <button className="absolute right-1 text-sm pl-2 pr-2 rounded top-0 bg-blue-800 text-white geist">Editar</button>
-       </div>
-      
-  </div>
-  <div className="mt-10">
-       <p className="text-white roboto ml-2">Senha:</p>
-       <div className="relative">
-         <p className="text-gray-400 geist ml-2">***********</p>
-         <button className="absolute right-1 text-sm pl-2 pr-2 rounded top-0 bg-blue-800 text-white geist">Editar</button>
-       </div>
-      
-  </div>
-</div>
-</div>
-    )
+            <div className="bg-gray-900 mt-6 mb-6 p-4 rounded-xl shadow-inner">
+                <div className="mb-6">
+                    <p className="text-white mb-2">Email:</p>
+                    <div className="relative">
+                        <p className="text-gray-400 mb-2  ">Meuemail@gmail.com</p>
+                        <button className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
+                    </div>
+                </div>
+                <div>
+                    <p className="text-white mb-2">Senha:</p>
+                    <div className="relative">
+                        <p className="text-gray-400 mb-2">***********</p>
+                        <button className="absolute right-2 top-0 text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition duration-200">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
