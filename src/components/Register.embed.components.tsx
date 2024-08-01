@@ -1,27 +1,32 @@
 import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
-import validator from 'validator';
 import api from '@/api';
-export default function LoginEmbed() {
+import validator from 'validator';
+
+
+export default function RegisterEmbed() {
     const router = useRouter();
-    
+
+    const nameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     
     const [error, setError] = useState<string>();
     const [success, setSuccess] = useState<boolean>(false);
-
+     
     function handleClick() {
-        router.push('/register');
+        router.push('/');
     }
+
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
 
+        const name = nameRef.current?.value;
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
         
-        if(!email?.trim() || !password?.trim()) {
+        if(!name?.trim() || !email?.trim() || !password?.trim()) {
             setError('Campo(s) vázio!');
             return;
         }
@@ -33,12 +38,16 @@ export default function LoginEmbed() {
           setError('Senha inválida');
           return;
         }
-        fetch(`${api}/login`, {
+        if(name.length < 6) {
+            setError('Nome inválido');
+            return;
+        }
+        fetch(`${api}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email: email, password: password })
+            body: JSON.stringify({ name: name, email: email, password: password })
         })
         .then(response => {
             if (!response.ok) {
@@ -57,22 +66,23 @@ export default function LoginEmbed() {
             setError('Login ou senha inválido');
         });
     }
+
     return (
         <div className="flex justify-center items-center h-screen bg-gray-900">
             <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
-                <h1 className="text-3xl font-bold text-white mb-6 text-center">Login</h1>
+                <h1 className="text-3xl font-bold text-white mb-6 text-center">Registro</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-white" htmlFor="email">Email</label>
                         <input 
-                        ref={emailRef}
+                            ref={emailRef}
                             type="email" 
                             id="email" 
                             className="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500" 
                             placeholder="Digite seu email"
                         />
                     </div>
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="block text-sm font-medium text-white" htmlFor="password">Senha</label>
                         <input 
                             ref={passwordRef}
@@ -80,6 +90,16 @@ export default function LoginEmbed() {
                             id="password" 
                             className="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500" 
                             placeholder="Digite sua senha"
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium text-white" htmlFor="name">Nome</label>
+                        <input 
+                            ref={nameRef}
+                            type="text" 
+                            id="name" 
+                            className="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500" 
+                            placeholder="Digite seu nome"
                         />
                     </div>
                     {error ? (
@@ -90,18 +110,18 @@ export default function LoginEmbed() {
 
                       {success ? (
                         <div className="mb-4 w-full bg-green-600 py-2 px-4 rounded flex justify-center">
-                           <p className='geist text-white'>Logado! Redirecionando...</p>
+                           <p className='geist text-white'>Registrado! Redirecionando...</p>
                         </div>
                     ) : null}
                     <button 
                         type="submit" 
-                       className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+                        className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                     >
-                         Entrar
+                        Registrar
                     </button>
                 </form>
                 <p className="text-center text-white mt-4">
-                    Não tem uma conta? 
+                    já tem uma conta? 
                     <a onClick={handleClick} className="text-blue-500 hover:underline"> Clique aqui</a>
                 </p>
             </div>
