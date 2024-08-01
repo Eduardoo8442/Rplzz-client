@@ -5,7 +5,7 @@ import { FaMicrophone, FaHeadphones } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { idUser } from "@/store/actions";
-
+import api from "@/api";
 type Users = {
     name: string;
     image: string;
@@ -75,12 +75,30 @@ export default function SideBar() {
     useEffect(() => {
         setMobile(window.innerWidth >= 770 ? true : false);
         setUsers([]);
-        //apagar quando for integrar com a API
-        function addObject(name: string, image: string, id: string) {
-            setUsers(current => [...current, { name, image, id }]);
-        }
-        addObject('Eduardo8442', '/images/profile.png', '849264');
-        addObject('RafaelStonks', '/images/profile.png', '248692');
+        const idUser = window.localStorage.getItem('idUser'); 
+       fetch(`${api}/friendslist`, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({ id: idUser }) 
+       })
+       .then(response => {
+           if (!response.ok) {
+               return response.text().then(text => {
+                   throw new Error(`Erro ${response.status}: ${text}`);
+               });
+           }
+           return response.json();
+       })
+       .then(data => {
+           console.log('Dados recebidos:', data);
+           const friendsData = JSON.parse(data.friends);
+           setUsers(friendsData);
+       })
+       .catch(error => {
+           console.error('Erro:', error);
+       });
     }, []);
 
     return (

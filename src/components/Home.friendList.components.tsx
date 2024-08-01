@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import api from "@/api";
 
 type Friend = {
   name: string;
@@ -7,17 +10,37 @@ type Friend = {
 
 export default function FriendsList() {
    const [friends, setFriends] = useState<Friend[]>([]);
-   
-   //desenvolvimento, apagar quando for integrar com a API
+   const idUser = useSelector((state: RootState) => state.setIdUserReducer.setIdUser);
+
    useEffect(() => {
        setFriends([]);
-       function addObject(name: string, image: string) {
-        setFriends(current => [...current, { name: name, image: image}]);
-       }
-       addObject('Eduardo8442', '/images/profile.png');
-       addObject('RafaelStonks', '/images/profile.png');
-   }, []);
-    return(
+       const idUser = window.localStorage.getItem('idUser'); 
+       fetch(`${api}/friendslist`, {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({ id: idUser }) 
+       })
+       .then(response => {
+           if (!response.ok) {
+               return response.text().then(text => {
+                   throw new Error(`Erro ${response.status}: ${text}`);
+               });
+           }
+           return response.json();
+       })
+       .then(data => {
+           console.log('Dados recebidos:', data);
+           const friendsData = JSON.parse(data.friends);
+           setFriends(friendsData);
+       })
+       .catch(error => {
+           console.error('Erro:', error);
+       });
+   }, [idUser]); 
+
+    return (
         <div>
           <div className="mt-5 ml-5">
              <p className="geist text-white mb-5">Lista de amigos - {friends.length}</p>
@@ -34,5 +57,5 @@ export default function FriendsList() {
 
           </div>
         </div>
-    )
+    );
 }

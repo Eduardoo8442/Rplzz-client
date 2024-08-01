@@ -2,9 +2,12 @@ import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import validator from 'validator';
 import api from '@/api';
+import { idUser } from '@/store/actions';
+
+
+
 export default function LoginEmbed() {
     const router = useRouter();
-    
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     
@@ -47,7 +50,7 @@ export default function LoginEmbed() {
             return response.json();
         })
         .then(data => {
-            console.log(data)
+            window.localStorage.setItem('idUser', data.idUser);
             setSuccess(true);
             setError(undefined);
             router.push('/home');

@@ -2,11 +2,11 @@ import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/api';
 import validator from 'validator';
+import { idUser } from '@/store/actions';
 
 
 export default function RegisterEmbed() {
     const router = useRouter();
-
     const nameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -56,7 +56,7 @@ export default function RegisterEmbed() {
             return response.json();
         })
         .then(data => {
-            console.log(data)
+            window.localStorage.setItem('idUser', data.idUser);
             setSuccess(true);
             setError(undefined);
             router.push('/home');
