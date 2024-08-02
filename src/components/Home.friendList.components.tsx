@@ -14,7 +14,7 @@ export default function FriendsList() {
 
    useEffect(() => {
        setFriends([]);
-       const idUser = window.localStorage.getItem('idUser'); 
+       const idUser = window.sessionStorage.getItem('idUser'); 
        fetch(`${api}/friendslist`, {
            method: 'POST',
            headers: {
@@ -32,13 +32,13 @@ export default function FriendsList() {
        })
        .then(data => {
            console.log('Dados recebidos:', data);
-           const friendsData = JSON.parse(data.friends);
+           const friendsData = data.friends ? JSON.parse(data.friends) : [];
            setFriends(friendsData);
        })
        .catch(error => {
            console.error('Erro:', error);
        });
-   }, [idUser]); 
+   }, [idUser]);
 
     return (
         <div>
@@ -46,14 +46,13 @@ export default function FriendsList() {
              <p className="geist text-white mb-5">Lista de amigos - {friends.length}</p>
 
              {friends.map((friend, index) => (
-            <div key={index}>
-            <div className="inline-flex pl-4 rounded pb-2 pt-2 pr-4 items-center mt-5 hover:bg-gray-600">
-              <img className="w-8 h-8  mr-2 rounded-full" src={friend.image}/>
-              {friend.name}
-              </div>
-             
-            </div>
-        ))}
+                <div key={index}>
+                    <div className="inline-flex pl-4 rounded pb-2 pt-2 pr-4 items-center mt-5 hover:bg-gray-600">
+                      <img className="w-8 h-8  mr-2 rounded-full" src={friend.image} alt={`Foto de ${friend.name}`} />
+                      {friend.name}
+                    </div>
+                </div>
+             ))}
 
           </div>
         </div>

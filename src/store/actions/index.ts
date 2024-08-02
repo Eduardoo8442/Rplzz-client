@@ -11,3 +11,10 @@ export const content = (newDate: boolean) => {
     };
   };
   
+  export const usersAction = (newDate: any) => {
+    return {
+      type: 'USERS',
+      payload: newDate,
+    };
+  };
+  

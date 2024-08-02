@@ -56,7 +56,9 @@ export default function RegisterEmbed() {
             return response.json();
         })
         .then(data => {
-            window.localStorage.setItem('idUser', data.idUser);
+            window.sessionStorage.setItem('idUser', data.id);
+            window.sessionStorage.setItem('name', data.name);
+            window.sessionStorage.setItem('email', data.email);
             setSuccess(true);
             setError(undefined);
             router.push('/home');

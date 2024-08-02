@@ -3,22 +3,28 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { GrConfigure } from "react-icons/gr";
 import { FaMicrophone, FaHeadphones } from "react-icons/fa";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { idUser } from "@/store/actions";
+import { RootState } from "@/store";
 import api from "@/api";
-type Users = {
-    name: string;
-    image: string;
+import { usersAction } from "@/store/actions";
+interface User {
     id: string;
-};
+    image: string;
+    name: string;
+}
+
+interface UsersState {
+    setUsers: User[];
+}
 
 export default function SideBar() {
     const [mobile, setMobile] = useState(true);
     const [embed, setEmbed] = useState(true);
-    const [users, setUsers] = useState<Users[]>([]);
     const router = useRouter();
     const dispatch = useDispatch();
-
+    const users = useSelector((state: RootState) => state.setUsersReducer.setUsers) as User[] | null;
+    const [name, setName] = useState<string>('');
     function handleClick() {
         setEmbed(!embed);
     }
@@ -49,18 +55,18 @@ export default function SideBar() {
                 </div>
 
                 <div className="mt-6 w-full px-4">
-                    {users.map((user, index) => (
+                    {users ? users.map((user: User, index: number) => (
                         <div key={index} onClick={handleClickUser} id={user.id} className="flex items-center p-2 mt-2 bg-gray-700 rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
                             <img className="w-10 h-10 rounded-full mr-4" src={user.image} alt={`${user.name} profile`} />
                             <p className="text-white">{user.name}</p>
                         </div>
-                    ))}
+                    )) : null}
                 </div>
-                     {/* parte de baixo do sidebar onde mostra informações do usuário*/}
+                
                 <div className="absolute bottom-0 bg-gray-900 w-full h-16 flex items-center justify-between px-4">
                     <div className="flex items-center">
                         <img className="w-10 h-10 rounded-full mr-2" src='/images/profile.png' alt="Profile" />
-                        <p className="text-white">Seu nick</p>
+                        <p className="text-white">{name}</p>
                     </div>
                     <div className="flex items-center space-x-4">
                         <FaMicrophone className="text-red-600 text-xl cursor-pointer" />
@@ -74,31 +80,31 @@ export default function SideBar() {
 
     useEffect(() => {
         setMobile(window.innerWidth >= 770 ? true : false);
-        setUsers([]);
-        const idUser = window.localStorage.getItem('idUser'); 
-       fetch(`${api}/friendslist`, {
-           method: 'POST',
-           headers: {
-               'Content-Type': 'application/json'
-           },
-           body: JSON.stringify({ id: idUser }) 
-       })
-       .then(response => {
-           if (!response.ok) {
-               return response.text().then(text => {
-                   throw new Error(`Erro ${response.status}: ${text}`);
-               });
-           }
-           return response.json();
-       })
-       .then(data => {
-           console.log('Dados recebidos:', data);
-           const friendsData = JSON.parse(data.friends);
-           setUsers(friendsData);
-       })
-       .catch(error => {
-           console.error('Erro:', error);
-       });
+        const idUser = window.sessionStorage.getItem('idUser');
+        setName(window.sessionStorage.getItem('name') || 'sem nick');
+        fetch(`${api}/friendslist`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: idUser }) 
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Erro ${response.status}: ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dados recebidos:', data);
+            const friendsData = JSON.parse(data.friends);
+            dispatch(usersAction(friendsData));
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+        });
     }, []);
 
     return (
