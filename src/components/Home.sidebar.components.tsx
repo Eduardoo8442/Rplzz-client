@@ -8,8 +8,10 @@ import { idUser } from "@/store/actions";
 import { RootState } from "@/store";
 import api from "@/api";
 import { usersAction } from "@/store/actions";
+import { io } from "socket.io-client";
+
 interface User {
-    id: string;
+    idUser: string;
     image: string;
     name: string;
 }
@@ -21,6 +23,7 @@ interface UsersState {
 export default function SideBar() {
     const [mobile, setMobile] = useState(true);
     const [embed, setEmbed] = useState(true);
+    const socket = io(api);
     const router = useRouter();
     const dispatch = useDispatch();
     const users = useSelector((state: RootState) => state.setUsersReducer.setUsers) as User[] | null;
@@ -45,6 +48,33 @@ export default function SideBar() {
         router.push('/home');
     }
 
+    function updateList() {
+        const idUser = window.sessionStorage.getItem('idUser');
+        setName(window.sessionStorage.getItem('name') || 'sem nick');
+        fetch(`${api}/friendslist`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: idUser }) 
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Erro ${response.status}: ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const friendsData = JSON.parse(data.friends);
+            dispatch(usersAction(friendsData));
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+        });
+    }
+
     function Bar() {
         return (
             <div className="z-50 flex bg-gray-800 h-screen w-80 fixed flex-col items-center shadow-lg">
@@ -56,7 +86,7 @@ export default function SideBar() {
 
                 <div className="mt-6 w-full px-4">
                     {users ? users.map((user: User, index: number) => (
-                        <div key={index} onClick={handleClickUser} id={user.id} className="flex items-center p-2 mt-2 bg-gray-700 rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
+                        <div key={index} onClick={handleClickUser} id={`${user.idUser}`} className="flex items-center p-2 mt-2 bg-gray-700 rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
                             <img className="w-10 h-10 rounded-full mr-4" src={user.image} alt={`${user.name} profile`} />
                             <p className="text-white">{user.name}</p>
                         </div>
@@ -80,31 +110,17 @@ export default function SideBar() {
 
     useEffect(() => {
         setMobile(window.innerWidth >= 770 ? true : false);
-        const idUser = window.sessionStorage.getItem('idUser');
-        setName(window.sessionStorage.getItem('name') || 'sem nick');
-        fetch(`${api}/friendslist`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: idUser }) 
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Erro ${response.status}: ${text}`);
-                });
+        updateList();
+        socket.on('alertEmitUpdateListSideBar', (id: number, idFriend: number) => {
+                  const idYou = window.sessionStorage.getItem('idUser'); //função pra atualizar a lista de amigos toda vez que aceitarem alguma solicitação de amizade
+            if(Number(id) === Number(idYou) || Number(idYou) === Number(idFriend)) {
+                updateList();  
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Dados recebidos:', data);
-            const friendsData = JSON.parse(data.friends);
-            dispatch(usersAction(friendsData));
-        })
-        .catch(error => {
-            console.error('Erro:', error);
         });
+
+        return () => {
+            socket.disconnect();
+          };
     }, []);
 
     return (

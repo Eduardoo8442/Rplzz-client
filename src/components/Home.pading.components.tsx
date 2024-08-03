@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import api from "@/api";
 import { idUser } from "@/store/actions";
+import { io } from "socket.io-client";
+
+
 type Friend = {
   name: string;
   image: string;
@@ -9,7 +12,7 @@ type Friend = {
 
 export default function Pading() {
    const [pading, setPading] = useState<Friend[]>([]);
-
+   const socket = io(api);
 
 
 
@@ -34,7 +37,8 @@ export default function Pading() {
         return response.json();
     })
     .then(data => {
-        updateList();
+        socket.emit('sendEmitUpdateListSideBar', { id: idUser, idFriend: idFriend});  //função pra atualizar a lista de amigos toda vez que aceitarem alguma solicitação de amizade
+            updateList(); 
     })
     .catch(error => {
         console.error('Erro:', error);
@@ -94,6 +98,9 @@ export default function Pading() {
    useEffect(() => {
        setPading([]);
        updateList();
+       return () => {
+        socket.disconnect();
+      };
    }, [idUser]);
     return(
         <div>
