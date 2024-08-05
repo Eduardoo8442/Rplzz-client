@@ -9,7 +9,7 @@ export default function Chat() {
         setMobile(window.innerWidth >= 770 ? true : false);
     }, []);
   return (
-    <div className="bg-gray-900 h-screen">
+    <div className="bg-gray-900 min-h-screen">
   <SideBar />
   {mobile ? (
                  

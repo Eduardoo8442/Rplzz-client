@@ -25,7 +25,7 @@ export default function ChatMain() {
 
   return (
     <div>
-      <Conversation socket={socket} set={setChat} chatArg={chat} />
+      <Conversation socket={socket} idFriend={idUser || ''} set={setChat} chatArg={chat} />
       <InputChat socket={socket} set={setChat} idFriend={idUser || ''} />
     </div>
   );
