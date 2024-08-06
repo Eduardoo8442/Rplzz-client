@@ -14,6 +14,7 @@ interface User {
     idUser: string;
     image: string;
     name: string;
+    notification: string;
 }
 
 interface UsersState {
@@ -86,9 +87,19 @@ export default function SideBar() {
 
                 <div className="mt-6 w-full px-4">
                     {users ? users.map((user: User, index: number) => (
-                        <div key={index} onClick={handleClickUser} id={`${user.idUser}`} className="flex items-center p-2 mt-2 bg-gray-700 rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
+                        <div key={index}>
+                        <div onClick={handleClickUser} id={`${user.idUser}`} className="flex items-center p-2 mt-2 bg-gray-700 relative rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
                             <img className="w-10 h-10 rounded-full mr-4" src={user.image} alt={`${user.name} profile`} />
                             <p className="text-white">{user.name}</p>
+                            {user.notification ? (
+                            <div>
+                               <span className="absolute top-0 -right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                               {user.notification}
+                             </span>        
+                            </div>
+                        ) : null}
+                        </div>
+                        
                         </div>
                     )) : null}
                 </div>

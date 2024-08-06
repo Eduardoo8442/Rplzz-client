@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import api from "@/api";
-import { idUser } from "@/store/actions";
 import { io } from "socket.io-client";
 
 
@@ -13,13 +12,11 @@ type Friend = {
 export default function Pading() {
    const [pading, setPading] = useState<Friend[]>([]);
    const socket = io(api);
-
-
+   const idUser = window.sessionStorage.getItem('idUser'); 
 
 
 
    const handleButton = (idFriend: string, action: boolean) => {
-    const idUser = window.sessionStorage.getItem('idUser'); 
     if(action)  {//ou seja, true = confirmado 
     fetch(`${api}/confirmfriend`, {
         method: 'POST',
@@ -98,6 +95,11 @@ export default function Pading() {
    useEffect(() => {
        setPading([]);
        updateList();
+       socket.on('sendFriendship', (id) => {
+        if(String(idUser) === String(id)) {
+            updateList();
+        }
+        })
        return () => {
         socket.disconnect();
       };
