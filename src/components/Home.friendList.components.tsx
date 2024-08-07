@@ -31,8 +31,10 @@ export default function FriendsList() {
            return response.json();
        })
        .then(data => {
-           console.log('Dados recebidos:', data);
-           const friendsData = data.friends ? JSON.parse(data.friends) : [];
+           const friendsData = data.friends ? data.friends.map((friend: Friend) => ({
+               ...friend,
+               image: friend.image.replace(/"/g, '')  
+           })) : [];
            setFriends(friendsData);
        })
        .catch(error => {
@@ -48,8 +50,10 @@ export default function FriendsList() {
              {friends.map((friend, index) => (
                 <div key={index}>
                     <div className="inline-flex pl-4 rounded pb-2 pt-2 pr-4 items-center mt-5 hover:bg-gray-600">
-                      <img className="w-8 h-8  mr-2 rounded-full" src={friend.image} alt={`Foto de ${friend.name}`} />
+                      <img className="w-8 h-8 mr-2 rounded-full" src={friend.image} alt={`Foto de ${friend.name}`} />
+                      <p className="text-white">
                       {friend.name}
+                      </p>
                     </div>
                 </div>
              ))}

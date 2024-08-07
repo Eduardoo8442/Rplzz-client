@@ -21,9 +21,17 @@ interface UsersState {
     setUsers: User[];
 }
 
+type Friend = {
+    name: string;
+    image: string;
+  };
+
+  
+
 export default function SideBar() {
     const [mobile, setMobile] = useState(true);
     const [embed, setEmbed] = useState(true);
+    const image = window.sessionStorage.getItem('image') || '/images/profile.png';
     const socket = io(api);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -68,7 +76,10 @@ export default function SideBar() {
             return response.json();
         })
         .then(data => {
-            const friendsData = JSON.parse(data.friends);
+            const friendsData = data.friends ? data.friends.map((friend: Friend) => ({
+                ...friend,
+                image: friend.image.replace(/"/g, '')  
+            })) : [];
             dispatch(usersAction(friendsData));
         })
         .catch(error => {
@@ -89,7 +100,7 @@ export default function SideBar() {
                     {users ? users.map((user: User, index: number) => (
                         <div key={index}>
                         <div onClick={handleClickUser} id={`${user.idUser}`} className="flex items-center p-2 mt-2 bg-gray-700 relative rounded-lg hover:bg-gray-900 transition duration-200 cursor-pointer">
-                            <img className="w-10 h-10 rounded-full mr-4" src={user.image} alt={`${user.name} profile`} />
+                            <img className="w-10 h-10 rounded-full mr-4" src={`${user.image}`} alt={`${user.name} profile`} />
                             <p className="text-white">{user.name}</p>
                             {user.notification ? (
                             <div>
@@ -106,7 +117,7 @@ export default function SideBar() {
                 
                 <div className="absolute bottom-0 bg-gray-900 w-full h-16 flex items-center justify-between px-4">
                     <div className="flex items-center">
-                        <img className="w-10 h-10 rounded-full mr-2" src='/images/profile.png' alt="Profile" />
+                        <img className="w-10 h-10 rounded-full mr-2" src={`${image.replace(/"/g, '')}` || '/images/profile.png'} alt="Profile" />
                         <p className="text-white">{name}</p>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -128,7 +139,6 @@ export default function SideBar() {
                 updateList();  
             }
         });
-
         return () => {
             socket.disconnect();
           };
@@ -136,7 +146,7 @@ export default function SideBar() {
 
     return (
         <div>
-            {embed ? <Bar /> : <GiHamburgerMenu className="fixed z-50 text-white text-2xl cursor-pointer left-4 top-4 hover:text-gray-400 transition duration-200" onClick={handleClick} />}
+            {embed ? <Bar /> : <GiHamburgerMenu className="fixed z-50 text-white text-2xl cursor-pointer left-2 top-10 hover:text-gray-400 transition duration-200" onClick={handleClick} />}
         </div>
     );
 }

@@ -70,7 +70,7 @@ export default function Friends() {
         <div className="relative">
             <div>
             {embedFriends ? <AddComponent embedState={setEmbedFriends}/> : null } 
-            <div className="flex justify-center items-center bg-gray-800 w-full h-10 geist text-white">
+            <div className="flex justify-center items-center bg-gray-800 w-full h-10 geist text-sm sm:text-base text-white">
                 <p className="m-2 cursor-pointer" onClick={handleAmigos} >Amigos</p>
                 <div className="relative flex items-center m-2">
                 <p className="m-2 cursor-pointer" onClick={handlePendente}>Pendente</p>

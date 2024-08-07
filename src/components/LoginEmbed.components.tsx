@@ -53,6 +53,7 @@ export default function LoginEmbed() {
             window.sessionStorage.setItem('idUser', data.idUser);
             window.sessionStorage.setItem('name', data.name);
             window.sessionStorage.setItem('email', data.email);
+            window.sessionStorage.setItem('image', data.image);
             setSuccess(true);
             setError(undefined);
             router.push('/home');

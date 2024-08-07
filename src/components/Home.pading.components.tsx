@@ -112,7 +112,7 @@ export default function Pading() {
              {pading.map((pending, index) => (
             <div key={index}>
             <div className="inline-flex pl-4 rounded pb-2 pt-2 pr-4 items-center mt-5 hover:bg-gray-600">
-              <img className="w-8 h-8  mr-2 rounded-full" src={pending.image}/>            
+              <img className="w-8 h-8  mr-2 rounded-full" src={`${pending.image.replace(/"/g, '')}` || '/images/profile.png'}/>            
               <p className="text-white">{pending.name}</p>
               <button 
                         className="bg-green-500 geist text-white text-sm ml-5 rounded"

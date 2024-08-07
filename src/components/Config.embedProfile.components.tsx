@@ -1,7 +1,7 @@
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { useRouter } from "next/router";
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import api from "@/api";
 interface EmbedProfileProps {
   setChangeEmail: Dispatch<SetStateAction<boolean>>;
   setChangePassWord: Dispatch<SetStateAction<boolean>>;
@@ -10,7 +10,9 @@ export default function EmbedProfile({ setChangeEmail, setChangePassWord}: Embed
     const router = useRouter();
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [id, setId] = useState<string>();
+    const [id, setId] = useState<string>('');
+    const [image, setImage] = useState<string>('');
+    const inputFileRef = useRef<HTMLInputElement>(null);
     function handleClick() {
         router.push('/home');
     }
@@ -20,10 +22,45 @@ export default function EmbedProfile({ setChangeEmail, setChangePassWord}: Embed
     function handlePassWord() {
         setChangePassWord(true);
     }
+    function handleFileChange() {
+        if (!inputFileRef.current) {
+          console.error('Referência ao input de arquivo não está disponível.');
+          return;
+        }
+      
+        const files = inputFileRef.current.files;
+        if (!files || files.length === 0) {
+          console.error('Nenhum arquivo foi selecionado.');
+          return;
+        }
+      
+        const file = files[0];
+        const url = `${api}/upload`;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('id', id);
+      
+        fetch(url, {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(result => {
+            const imageLink = result.imageLink;
+            window.sessionStorage.setItem('image', imageLink);
+            setImage(imageLink);
+          })
+          .catch(error => {
+            console.error('Erro na requisição fetch:', error);
+          });
+      }
+      
+      
     useEffect(() => {
         setName(window.sessionStorage.getItem('name') || 'Sem nick');
         setEmail(window.sessionStorage.getItem('email') || 'Sem email');
         setId(window.sessionStorage.getItem('idUser') || 'Sem id');
+        setImage(window.sessionStorage.getItem('image') || '/images/profile.png');
     }, []);
     return (
         <div className="bg-gray-800 p-6 rounded-lg border-r-4 border-yellow-500 relative shadow-lg">
@@ -33,7 +70,10 @@ export default function EmbedProfile({ setChangeEmail, setChangePassWord}: Embed
             />
 
             <div className="flex items-center pt-2">
-                <img className="w-20 h-20 mr-4 rounded-full" src='/images/profile.png' alt="Profile"/>
+              <label htmlFor="imageInput" style={{ cursor: 'pointer' }}>
+                <img id="imageButton" className="w-20 h-20 mr-4 rounded-full cursor-pointer" src={image.replace(/"/g, '')} alt="Profile"/>
+                </label>
+                <input type="file" ref={inputFileRef} id="imageInput" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
                 <div className="ml-4">
                     <p className="text-3xl font-semibold text-white">{name}</p>
                     <p className="text-gray-400">seu id: {id}</p>

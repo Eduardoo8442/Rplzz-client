@@ -59,6 +59,7 @@ export default function RegisterEmbed() {
             window.sessionStorage.setItem('idUser', data.id);
             window.sessionStorage.setItem('name', data.name);
             window.sessionStorage.setItem('email', data.email);
+            window.sessionStorage.setItem('image', data.image);
             setSuccess(true);
             setError(undefined);
             router.push('/home');

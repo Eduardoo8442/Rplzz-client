@@ -61,7 +61,7 @@ export default function Conversation({
   useEffect(() => {
     const handleNewMessage = (data: Message) => {
       const currentUserId = window.sessionStorage.getItem("idUser");
-      console.log(currentUserId, data.idFriend, data.idUser);
+
       if (data.idFriend === currentUserId || data.idUser === currentUserId) {
         set((currentList: any) => [...currentList, data]);
       }
@@ -84,7 +84,7 @@ export default function Conversation({
               src={message.image}
               alt={message.name}
             />
-            <div>
+            <div className="text-white">
               <p>{message.name}:</p>
               <p className="break-all">{message.message}</p>
             </div>
