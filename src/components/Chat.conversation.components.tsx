@@ -14,6 +14,7 @@ type Chat = {
   name: string;
   image: string;
   message: string;
+  imageMessage: string;
 };
 
 export default function Conversation({
@@ -47,6 +48,7 @@ export default function Conversation({
       })
       .then((data) => {
         const chatData = data.chat ? data.chat : [];
+        console.log(chatData)
         set(chatData);
       })
       .catch((error) => {
@@ -61,7 +63,7 @@ export default function Conversation({
   useEffect(() => {
     const handleNewMessage = (data: Message) => {
       const currentUserId = window.sessionStorage.getItem("idUser");
-
+      console.log(data)
       if (data.idFriend === currentUserId || data.idUser === currentUserId) {
         set((currentList: any) => [...currentList, data]);
       }
@@ -81,12 +83,23 @@ export default function Conversation({
           <div className="inline-flex justify-center">
             <img
               className="w-8 h-8 mr-2 rounded-full"
-              src={message.image}
+              src={message.image.replace(/"/g, '')}
               alt={message.name}
             />
             <div className="text-white">
               <p>{message.name}:</p>
-              <p className="break-all">{message.message}</p>
+             
+             {message.message ?  <p className="break-all">{message.message}</p> : null }
+             
+              {message.imageMessage ? (
+                <div>
+                    <img
+                    className="max-w-80 max-h-64 cursor-pointer hover:brightness-50"
+                    src={message.imageMessage}
+                    alt={message.name}
+                   />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
