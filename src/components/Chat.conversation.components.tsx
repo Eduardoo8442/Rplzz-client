@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import api from "@/api";
-
+import ImageFocus from "./Chat.imageFocus.components";
 type Message = {
   name: string;
   image: string;
@@ -28,6 +28,10 @@ export default function Conversation({
   set: any;
   idFriend: string;
 }) {
+
+  const [imageFocus, setImageFocus] = useState<null | string>(null);
+
+
   function getListChat(): void {
     set([]);
     const idUser = window.sessionStorage.getItem("idUser");
@@ -55,7 +59,12 @@ export default function Conversation({
         console.error("Erro:", error);
       });
   }
-
+  function handleImageFocus(event: React.MouseEvent<HTMLImageElement>) {
+    const target = event.target as HTMLImageElement;
+    if (!imageFocus) {
+      setImageFocus(target.src);
+    }
+  }
   useEffect(() => {
     getListChat();
   }, []);
@@ -94,6 +103,7 @@ export default function Conversation({
               {message.imageMessage ? (
                 <div>
                     <img
+                    onClick={handleImageFocus}
                     className="max-w-80 max-h-64 cursor-pointer hover:brightness-50"
                     src={message.imageMessage}
                     alt={message.name}
@@ -105,6 +115,7 @@ export default function Conversation({
         </div>
       ))}
       <div className={chatArg.length >= 11 ? 'mt-16' : ''}></div>
+      {imageFocus ? <ImageFocus func={setImageFocus} srcImage={imageFocus}/> : null}
     </div>
   );
 }
