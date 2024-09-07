@@ -15,6 +15,9 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
+.background-embed-title-main {
+  background-color: rgba(36, 167, 112, 0.178);
+}
 
 body {
   color: rgb(var(--foreground-rgb));

@@ -1,12 +1,9 @@
 import '../app/globals.css'
-import LoginEmbed from '@/components/LoginEmbed.components';
-
+import MainComponent from '@/components/Main.components';
 export default function Index() {
     return (
-        <div className="bg-gray-900 h-screen flex items-center justify-center">
-            <div className='flex justify-center'>
-                <LoginEmbed />
-            </div>
+        <div className="bg-gray-950 min-h-screen h-screen flex items-center justify-center">
+         <MainComponent />
         </div>
     );
 }
