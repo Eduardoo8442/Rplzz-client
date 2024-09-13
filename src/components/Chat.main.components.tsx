@@ -12,7 +12,6 @@ type Chat = {
   message: string;
   imageMessage: string;
 }
-
 export default function ChatMain() {
   const socket: Socket = io(api);
   const [chat, setChat] = useState<Chat[]>([]);

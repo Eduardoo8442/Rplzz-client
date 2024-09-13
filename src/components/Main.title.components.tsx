@@ -9,7 +9,7 @@ export default function TitleMain() {
     }
 
     return (
-        <div className="relative w-full flex flex-col justify-center items-center">
+        <div className="h-screen w-screen relative flex flex-col justify-center items-center">
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute right-0 top-0 w-0 h-0 bg-transparent rounded-full shadow-[0_0_200px_250px_rgba(0,51,204,0.3)]"></div>
                 <div className="absolute left-0 bottom-0 w-0 h-0 bg-transparent rounded-full shadow-[0_0_200px_250px_rgba(0,51,204,0.3)]"></div>

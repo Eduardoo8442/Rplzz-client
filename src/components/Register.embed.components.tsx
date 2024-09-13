@@ -15,7 +15,7 @@ export default function RegisterEmbed() {
     const [success, setSuccess] = useState<boolean>(false);
      
     function handleClick() {
-        router.push('/');
+        router.push('/login');
     }
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
