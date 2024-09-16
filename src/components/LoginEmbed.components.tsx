@@ -2,7 +2,6 @@ import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import validator from 'validator';
 import api from '@/api';
-import { idUser } from '@/store/actions';
 
 
 
