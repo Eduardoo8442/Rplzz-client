@@ -1,3 +1,4 @@
+'use client'
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { useRouter } from "next/router";
 

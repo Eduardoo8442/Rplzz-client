@@ -1,9 +1,9 @@
+'use client'
 import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import validator from 'validator';
 import api from '@/api';
-
-
+import isBrowser from '@/functions/isBrowser';
 
 export default function LoginEmbed() {
     const router = useRouter();
@@ -16,26 +16,27 @@ export default function LoginEmbed() {
     function handleClick() {
         router.push('/register');
     }
+
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-
 
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
         
-        if(!email?.trim() || !password?.trim()) {
+        if (!email?.trim() || !password?.trim()) {
             setError('Campo(s) vázio!');
             return;
         }
-        if(!validator.isEmail(email)) {
+        if (!validator.isEmail(email)) {
             setError('Email inválido');
             return;
         }
-        if(password.length < 6) {
-          setError('Senha inválida');
-          return;
+        if (password.length < 6) {
+            setError('Senha inválida');
+            return;
         }
-        const token = sessionStorage.getItem('auth-token');
+
+        const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
         fetch(`${api}/login`, {
             method: 'POST',
             headers: {
@@ -51,11 +52,13 @@ export default function LoginEmbed() {
             return response.json();
         })
         .then(data => {
-            window.sessionStorage.setItem('idUser', data.idUser);
-            window.sessionStorage.setItem('name', data.name);
-            window.sessionStorage.setItem('email', data.email);
-            window.sessionStorage.setItem('image', data.image);
-            window.sessionStorage.setItem('auth-token', data.token);
+            if (isBrowser()) {
+                sessionStorage.setItem('idUser', data.idUser);
+                sessionStorage.setItem('name', data.name);
+                sessionStorage.setItem('email', data.email);
+                sessionStorage.setItem('image', data.image);
+                sessionStorage.setItem('auth-token', data.token);
+            }
             setSuccess(true);
             setError(undefined);
             router.push('/home');
@@ -65,6 +68,7 @@ export default function LoginEmbed() {
             setError('Login ou senha inválido');
         });
     }
+
     return (
         <div className="flex justify-center items-center h-screen bg-gray-900">
             <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -73,7 +77,7 @@ export default function LoginEmbed() {
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-white" htmlFor="email">Email</label>
                         <input 
-                        ref={emailRef}
+                            ref={emailRef}
                             type="email" 
                             id="email" 
                             className="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:border-blue-500" 
@@ -96,14 +100,14 @@ export default function LoginEmbed() {
                         </div>
                     ) : null}
 
-                      {success ? (
+                    {success ? (
                         <div className="mb-4 w-full bg-green-600 py-2 px-4 rounded flex justify-center">
                            <p className='geist text-white'>Logado! Redirecionando...</p>
                         </div>
                     ) : null}
                     <button 
                         type="submit" 
-                       className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+                        className="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                     >
                          Entrar
                     </button>

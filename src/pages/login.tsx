@@ -1,3 +1,4 @@
+'use client';
 import '../app/globals.css'
 import LoginEmbed from '@/components/LoginEmbed.components';
 

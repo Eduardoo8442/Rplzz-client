@@ -1,3 +1,4 @@
+'use client';
 import '../app/globals.css'
 import MainComponent from '@/components/Main.components';
 export default function Index() {

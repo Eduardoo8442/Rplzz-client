@@ -1,9 +1,10 @@
+'use client'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import api from "@/api";
 import EmbedProfile from "./shared/Profile.embed.components";
-
+import isBrowser from "@/functions/isBrowser";
 type Friend = {
   name: string;
   image: string;
@@ -14,7 +15,7 @@ type Account = {
     name: string;
     image: string;
     idUser: string;
-  }
+}
 
 export default function FriendsList() {
    const [friends, setFriends] = useState<Friend[]>([]);
@@ -25,46 +26,46 @@ export default function FriendsList() {
    const [y, setY] = useState(0.0);
 
    function handleContextMenu(event: React.MouseEvent) {
-    event.preventDefault();
-    const elementId = (event.currentTarget as HTMLElement).id;
-    if(!showEmbedProfile) {
-        setY(event.clientY);
-        setX(event.clientX);
-        const token = sessionStorage.getItem('auth-token');
-        fetch(`${api}/getaccount`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: elementId }) 
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Erro ${response.status}: ${text}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            setAccount(data.account);
-            setShowEmbedProfile(true);
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-        });
-    }
-
+       event.preventDefault();
+       const elementId = (event.currentTarget as HTMLElement).id;
+       if (!showEmbedProfile) {
+           setY(event.clientY);
+           setX(event.clientX);
+           const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
+           fetch(`${api}/getaccount`, {
+               method: 'POST',
+               headers: {
+                   'Authorization': `Bearer ${token}`,
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({ id: elementId }) 
+           })
+           .then(response => {
+               if (!response.ok) {
+                   return response.text().then(text => {
+                       throw new Error(`Erro ${response.status}: ${text}`);
+                   });
+               }
+               return response.json();
+           })
+           .then(data => {
+               setAccount(data.account);
+               setShowEmbedProfile(true);
+           })
+           .catch(error => {
+               console.error('Erro:', error);
+           });
+       }
    }
+
    useEffect(() => {
        setFriends([]);
-       const idUser = window.sessionStorage.getItem('idUser'); 
-       const token = sessionStorage.getItem('auth-token');
+       const idUser = isBrowser() ? window.sessionStorage.getItem('idUser') : null; 
+       const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
        fetch(`${api}/friendslist`, {
            method: 'POST',
            headers: {
-             'Authorization': `Bearer ${token}`,
+               'Authorization': `Bearer ${token}`,
                'Content-Type': 'application/json'
            },
            body: JSON.stringify({ id: idUser }) 

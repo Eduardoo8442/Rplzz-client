@@ -1,13 +1,16 @@
+'use client';
 import React, { Dispatch, SetStateAction } from 'react';
 import { FaExclamationCircle } from 'react-icons/fa';
-
+import isBrowser from '@/functions/isBrowser';
 interface EmbedProfileProps {
   set: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ErrorSendImageVideo({ set }: EmbedProfileProps) {
   function handleClick() {
-    set(false);
+    if (isBrowser()) {
+      set(false);
+    }
   }
 
   return (

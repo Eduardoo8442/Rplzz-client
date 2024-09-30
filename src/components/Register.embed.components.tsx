@@ -1,9 +1,9 @@
+'use client'
 import React, { useRef, useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import api from '@/api';
 import validator from 'validator';
-import { idUser } from '@/store/actions';
-
+import isBrowser from '@/functions/isBrowser';
 
 export default function RegisterEmbed() {
     const router = useRouter();
@@ -21,28 +21,27 @@ export default function RegisterEmbed() {
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-
         const name = nameRef.current?.value;
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
         
-        if(!name?.trim() || !email?.trim() || !password?.trim()) {
+        if (!name?.trim() || !email?.trim() || !password?.trim()) {
             setError('Campo(s) vázio!');
             return;
         }
-        if(!validator.isEmail(email)) {
+        if (!validator.isEmail(email)) {
             setError('Email inválido');
             return;
         }
-        if(password.length < 6) {
-          setError('Senha inválida');
-          return;
+        if (password.length < 6) {
+            setError('Senha inválida');
+            return;
         }
-        if(name.length < 6) {
+        if (name.length < 6) {
             setError('Nome inválido');
             return;
         }
-        const token = sessionStorage.getItem('auth-token');
+        const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
         fetch(`${api}/register`, {
             method: 'POST',
             headers: {
@@ -58,11 +57,13 @@ export default function RegisterEmbed() {
             return response.json();
         })
         .then(data => {
-            window.sessionStorage.setItem('idUser', data.id);
-            window.sessionStorage.setItem('name', data.name);
-            window.sessionStorage.setItem('email', data.email);
-            window.sessionStorage.setItem('image', data.image);
-            window.sessionStorage.setItem('auth-token', data.token);
+            if (isBrowser()) {
+                sessionStorage.setItem('idUser', data.id);
+                sessionStorage.setItem('name', data.name);
+                sessionStorage.setItem('email', data.email);
+                sessionStorage.setItem('image', data.image);
+                sessionStorage.setItem('auth-token', data.token);
+            }
             setSuccess(true);
             setError(undefined);
             router.push('/home');
@@ -114,7 +115,7 @@ export default function RegisterEmbed() {
                         </div>
                     ) : null}
 
-                      {success ? (
+                    {success ? (
                         <div className="mb-4 w-full bg-green-600 py-2 px-4 rounded flex justify-center">
                            <p className='geist text-white'>Registrado! Redirecionando...</p>
                         </div>

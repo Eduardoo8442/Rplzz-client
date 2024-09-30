@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { GrConfigure } from "react-icons/gr";
@@ -10,7 +11,7 @@ import api from "@/api";
 import { usersAction } from "@/store/actions";
 import { io } from "socket.io-client";
 import EmbedProfile from "./shared/Profile.embed.components";
-
+import isBrowser from "@/functions/isBrowser";
 interface User {
     idUser: string;
     image: string;
@@ -21,19 +22,19 @@ interface User {
 type Friend = {
     name: string;
     image: string;
-  };
+};
 
-  type Account = {
+type Account = {
     name: string;
     image: string;
     idUser: string;
-  }
-  
+};
+
 
 export default function SideBar() {
     const [mobile, setMobile] = useState(true);
     const [embed, setEmbed] = useState(true);
-    const image = window.sessionStorage.getItem('image') || '/images/profile.png';
+    const image = isBrowser() ? window.sessionStorage.getItem('image') || '/images/profile.png' : '/images/profile.png';
     const socket = io(api);
     const router = useRouter();
     const dispatch = useDispatch();
@@ -65,9 +66,9 @@ export default function SideBar() {
     }
 
     function updateList() {
-        const idUser = window.sessionStorage.getItem('idUser');
-        setName(window.sessionStorage.getItem('name') || 'sem nick');
-        const token = sessionStorage.getItem('auth-token');
+        const idUser = isBrowser() ? window.sessionStorage.getItem('idUser') : null;
+        setName(isBrowser() ? window.sessionStorage.getItem('name') || 'sem nick' : 'sem nick');
+        const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
         fetch(`${api}/friendslist`, {
             method: 'POST',
             headers: {
@@ -95,13 +96,14 @@ export default function SideBar() {
             console.error('Erro:', error);
         });
     }
+
     function handleContextMenu(event: React.MouseEvent) {
         event.preventDefault();
         const elementId = (event.currentTarget as HTMLElement).id;
-        if(!showEmbedProfile) {
+        if (!showEmbedProfile) {
             setY(event.clientY);
             setX(event.clientX);
-            const token = sessionStorage.getItem('auth-token');
+            const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
             fetch(`${api}/getaccount`, {
                 method: 'POST',
                 headers: {
@@ -126,8 +128,8 @@ export default function SideBar() {
                 console.error('Erro:', error);
             });
         }
-    
-       }
+    }
+
     function Bar() {
         return (
             <div className="z-40 flex bg-gray-800 h-screen w-80 fixed flex-col items-center shadow-lg">
@@ -172,17 +174,17 @@ export default function SideBar() {
     }
 
     useEffect(() => {
-        setMobile(window.innerWidth >= 770 ? true : false);
+        setMobile(isBrowser() && window.innerWidth >= 770);
         updateList();
         socket.on('alertEmitUpdateListSideBar', (id: number, idFriend: number) => {
-                  const idYou = window.sessionStorage.getItem('idUser'); //função pra atualizar a lista de amigos toda vez que aceitarem alguma solicitação de amizade
-            if(Number(id) === Number(idYou) || Number(idYou) === Number(idFriend)) {
+            const idYou = isBrowser() ? window.sessionStorage.getItem('idUser') : null; //função pra atualizar a lista de amigos toda vez que aceitarem alguma solicitação de amizade
+            if (Number(id) === Number(idYou) || Number(idYou) === Number(idFriend)) {
                 updateList();  
             }
         });
         return () => {
             socket.disconnect();
-          };
+        };
     }, []);
 
     return (

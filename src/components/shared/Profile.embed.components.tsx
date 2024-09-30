@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from "react";
 import { idUser } from "@/store/actions";
 import { useDispatch } from "react-redux";

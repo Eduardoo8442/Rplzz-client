@@ -1,3 +1,4 @@
+'use client'
 import TitleMain from "./Main.title.components";
 import NavBar from "./shared/Main.navbar.components";
 import EmbedDetails from "./Main.embedDetails.components";

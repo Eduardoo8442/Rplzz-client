@@ -1,24 +1,28 @@
+'use client'
 import { useRef, useState } from "react";
 import api from "@/api";
+import isBrowser from "@/functions/isBrowser";
 export default function AddComponent({ embedState }: any) {
     const [error, setError] = useState<string>();
     const [success, setSuccess] = useState<string>();
     const inputRef = useRef<HTMLInputElement>(null);
+
     function handleClick(): void {
         embedState(false);
     }
+
     function handleButton(): void {
         const value = inputRef.current?.value;
-        if(!value?.trim()) {
+        if (!value?.trim()) {
             setError('Input vázio');
             return;
         }
-        const idUser = window.sessionStorage.getItem('idUser'); 
-        if(idUser === value.trim()) {
+        const idUser = isBrowser() ? window.sessionStorage.getItem('idUser') : null; 
+        if (idUser === value.trim()) {
             setError('Você não pode adicionar a si mesmo');
             return;
         }
-        const token = sessionStorage.getItem('auth-token');
+        const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
         fetch(`${api}/addfriends`, {
             method: 'POST',
             headers: {
@@ -36,16 +40,17 @@ export default function AddComponent({ embedState }: any) {
             return response.json();
         })
         .then(data => {
-         setSuccess('Pedido enviado');
-         if (inputRef.current) {
-            inputRef.current.value = '';
-          }
+            setSuccess('Pedido enviado');
+            if (inputRef.current) {
+                inputRef.current.value = '';
+            }
         })
         .catch(error => {
             console.error('Erro:', error);
             setError('ID inválido');
         });
     }
+
     return (
         <div>
             <div onClick={handleClick} className="fixed w-full h-full bg-black bg-opacity-50 z-10"></div>
@@ -60,8 +65,8 @@ export default function AddComponent({ embedState }: any) {
                         className="w-full p-2 mb-4 border rounded-md bg-gray-900 border-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button onClick={handleButton} className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300">Enviar</button>
-                   {error ? <p className="text-red-600 geist">{error}</p> : null}
-                   {success ? <p className="text-green-600 geist">{success}</p> : null}
+                    {error ? <p className="text-red-600 geist">{error}</p> : null}
+                    {success ? <p className="text-green-600 geist">{success}</p> : null}
                 </div>
             </div>
         </div>

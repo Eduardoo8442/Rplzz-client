@@ -1,3 +1,4 @@
+'use client';
 import '../app/globals.css'
 import RegisterEmbed from '@/components/Register.embed.components';
 

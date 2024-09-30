@@ -1,3 +1,4 @@
+'use client';
 import '../app/globals.css'
 import SideBar from '@/components/Home.sidebar.components';
 import { RootState } from '../store';
@@ -8,7 +9,9 @@ export default function Index() {
     const content = useSelector((state: RootState) => state.setContentReducer.setContent);
     const [mobile, setMobile] = useState(false);
     useEffect(() => {
+      if (typeof window !== 'undefined') {
         setMobile(window.innerWidth >= 770 ? true : false);
+      }
     }, []);
     return (
         <div className="bg-gray-900 min-h-screen">

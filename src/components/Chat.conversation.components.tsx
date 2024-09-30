@@ -1,8 +1,9 @@
+'use client';
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import api from "@/api";
 import ImageFocus from "./Chat.imageFocus.components";
-
+import isBrowser from "@/functions/isBrowser";
 type Message = {
   name: string;
   imageorvideo: ImageVideo;
@@ -38,8 +39,9 @@ export default function Conversation({
 
   function getListChat(): void {
     set([]);
-    const idUser = window.sessionStorage.getItem("idUser");
-    const token = window.sessionStorage.getItem('auth-token');
+    const idUser = isBrowser() ? window.sessionStorage.getItem("idUser") : null;
+    const token = isBrowser() ? window.sessionStorage.getItem('auth-token') : null;
+
     fetch(`${api}/getchatlist`, {
       method: "POST",
       headers: {
@@ -79,7 +81,7 @@ export default function Conversation({
 
   useEffect(() => {
     const handleNewMessage = (data: Message) => {
-      const currentUserId = window.sessionStorage.getItem("idUser");
+      const currentUserId = isBrowser() ? window.sessionStorage.getItem("idUser") : null;
       console.log(data);
       if (data.idFriend === currentUserId || data.idUser === currentUserId) {
         set((currentList: any) => [...currentList, data]);
@@ -105,9 +107,7 @@ export default function Conversation({
             />
             <div className="text-white">
               <p>{message.name}:</p>
-
               {message.message ? <p className="break-all">{message.message}</p> : null}
-          
               {message.imageorvideo?.url && message.imageorvideo.type ? (
                 <div>
                   <video width="400" controls>
@@ -116,7 +116,6 @@ export default function Conversation({
                   </video>
                 </div>
               ) : null}
-              
               {message.imageorvideo?.url && !message.imageorvideo.type ? (
                 <div>
                   <img

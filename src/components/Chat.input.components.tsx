@@ -1,8 +1,9 @@
+'use client';
 import { useRef } from "react";
 import { Socket } from "socket.io-client";
 import { FaImages } from "react-icons/fa";
 import api from "@/api";
-
+import isBrowser from "@/functions/isBrowser";
 interface InputChatProps {
     set: any;
     socket: Socket;
@@ -13,16 +14,17 @@ interface InputChatProps {
 export default function InputChat({ set, setFailure, socket, idFriend }: InputChatProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const inputFileRef = useRef<HTMLInputElement>(null);
-    const image = window.sessionStorage.getItem('image');
+    const image = isBrowser() ? window.sessionStorage.getItem('image') : null;
+
     async function formatMediaURL(file: any): Promise<{ url: string | null, isVideo: boolean }> {
         const fileURL = file[0];
         const url = `${api}/uploadimagemessage`;
-        const token = sessionStorage.getItem('auth-token');
+        const token = isBrowser() ? sessionStorage.getItem('auth-token') : null;
         const formData = new FormData();
         formData.append('file', fileURL);
         let mediaLink = null;
         let isVideo = false;
-    
+
         const videoExtensions = /\.(mp4|mkv|webm|avi|mov)$/i;
         if (fileURL.name.match(videoExtensions)) {
             isVideo = true;
@@ -47,29 +49,29 @@ export default function InputChat({ set, setFailure, socket, idFriend }: InputCh
             setFailure(true);
             console.error('Error during file upload:', error);
         });
-    
+
         return { url: mediaLink, isVideo };
     }
 
     async function handleClick(origin: 'input' | 'image'): Promise<void> {
         const input = inputRef.current?.value;
-        let mediaResult: {url: string | null, isVideo: boolean} = { url: null, isVideo: false };
-    
+        let mediaResult: { url: string | null, isVideo: boolean } = { url: null, isVideo: false };
+
         if (origin === 'image' && inputFileRef.current) {
             const files = inputFileRef.current.files;
             if (files && files.length !== 0) {
                 mediaResult = await formatMediaURL(files);
             }
         }
-    
+
         if (input || mediaResult.url) {
             const newInputValue = input ? input : 'Ei, olhe essa mídia!';
             if (!newInputValue.trim()) return;
             const data = {
-                name: window.sessionStorage.getItem('name'),
+                name: isBrowser() ? window.sessionStorage.getItem('name') : null,
                 image: image,
                 message: newInputValue,
-                idUser: window.sessionStorage.getItem('idUser'),
+                idUser: isBrowser() ? window.sessionStorage.getItem('idUser') : null,
                 idFriend: idFriend,
                 imageorvideo: {
                     url: mediaResult.url,
@@ -77,7 +79,7 @@ export default function InputChat({ set, setFailure, socket, idFriend }: InputCh
                 }
             };
             if (input) inputRef.current.value = '';
-            socket.emit('updateSideBarNotification', { id: window.sessionStorage.getItem('idUser'), idFriend: idFriend });
+            socket.emit('updateSideBarNotification', { id: isBrowser() ? window.sessionStorage.getItem('idUser') : null, idFriend: idFriend });
             socket.emit('sendMessage', data);
         }
     }
