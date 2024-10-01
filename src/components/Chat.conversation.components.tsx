@@ -4,6 +4,7 @@ import { Socket } from "socket.io-client";
 import api from "@/api";
 import ImageFocus from "./Chat.imageFocus.components";
 import isBrowser from "@/functions/isBrowser";
+import NoChat from "./shared/Chat.noChat.components";
 type Message = {
   name: string;
   imageorvideo: ImageVideo;
@@ -82,14 +83,12 @@ export default function Conversation({
   useEffect(() => {
     const handleNewMessage = (data: Message) => {
       const currentUserId = isBrowser() ? window.sessionStorage.getItem("idUser") : null;
-      console.log(data);
       if (data.idFriend === currentUserId || data.idUser === currentUserId) {
         set((currentList: any) => [...currentList, data]);
       }
     };
 
     socket.on("emitMessage", handleNewMessage);
-
     return () => {
       socket.off("emitMessage", handleNewMessage);
     };
@@ -97,6 +96,8 @@ export default function Conversation({
 
   return (
     <div>
+      {chatArg.length === 0 ? <NoChat /> : (
+        <div>
       {chatArg.map((message, index) => (
         <div key={index}>
           <div className="inline-flex justify-center">
@@ -132,6 +133,8 @@ export default function Conversation({
       ))}
       <div className={chatArg.length >= 11 ? "mt-16" : ""}></div>
       {imageFocus ? <ImageFocus func={setImageFocus} srcImage={imageFocus} /> : null}
+        </div>
+      )}
     </div>
   );
 }
