@@ -114,7 +114,7 @@ export default function LoginEmbed() {
                 </form>
                 <p className="text-center text-white mt-4">
                     Não tem uma conta? 
-                    <a onClick={handleClick} className="text-blue-500 hover:underline"> Clique aqui</a>
+                    <a onClick={handleClick} className="text-blue-500 hover:underline cursor-pointer"> Clique aqui</a>
                 </p>
             </div>
         </div>

@@ -23,6 +23,7 @@ type Chat = {
   image: string;
   message: string;
   imageorvideo?: ImageVideo; 
+  date: string;
 };
 
 export default function Conversation({
@@ -107,7 +108,10 @@ export default function Conversation({
               alt={message.name}
             />
             <div className="text-white">
-              <p>{message.name}:</p>
+              <div className="flex justify-center items-center">
+              <p className="mr-2">{message.name}</p>
+              <p className="text-gray-500 text-sm">{message.date}</p> 
+              </div>
               {message.message ? <p className="break-all">{message.message}</p> : null}
               {message.imageorvideo?.url && message.imageorvideo.type ? (
                 <div>
