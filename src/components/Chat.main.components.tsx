@@ -13,7 +13,8 @@ type Chat = {
   image: string;
   message: string;
   imageMessage: string;
-  date: string
+  date: string;
+  idUser: string;
 }
 
 export default function ChatMain() {
