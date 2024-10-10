@@ -5,7 +5,8 @@
   import ImageFocus from "./Chat.imageFocus.components";
   import isBrowser from "@/functions/isBrowser";
   import NoChat from "./shared/Chat.noChat.components";
-   import EmbedInfoMessage from "./Chat.embedInfoMessage.components";
+  import EmbedInfoMessage from "./Chat.embedInfoMessage.components";
+  import EmbedProfile from "./shared/Profile.embed.components";
   type Message = {
     name: string;
     imageorvideo: ImageVideo;
@@ -33,6 +34,11 @@
     index: string;
   }
 
+  type Account = {
+    name: string;
+    image: string;
+    idUser: string;
+  }
   export default function Conversation({
     chatArg,
     socket,
@@ -46,6 +52,10 @@
   }) {
     const [imageFocus, setImageFocus] = useState<null | string>(null);
     const [idMessageInfo, setIdMessageInfo] = useState<MessageInfo | null>(null);
+     const [showEmbedProfile, setShowEmbedProfile] = useState<boolean>(false); //código do embedinfomessage, para mostrar a conta
+     const [account, setAccount] = useState<Account>(); //código do embedinfomessage, para mostrar a conta
+     const [x, setX] = useState(0.0);  //código do embedinfomessage, para mostrar a conta
+     const [y, setY] = useState(0.0);  //código do embedinfomessage, para mostrar a conta
     const idUser = isBrowser() ? window.sessionStorage.getItem("idUser") : null;
     function getListChat(): void {
       set([]);
@@ -83,7 +93,15 @@
         setImageFocus(target.src);
       }
     }
-
+    function handleDeleteMessage(id: string, idFriend: string, index: string) {
+     if(idUser === id || idUser === idFriend) {
+      set((currentList: any) => {
+        const updatedList = [...currentList];
+        updatedList.splice(Number(index), 1);
+        return updatedList; 
+      });
+     }
+    }
     useEffect(() => {
       getListChat();
     }, []);
@@ -97,8 +115,10 @@
       };
 
       socket.on("emitMessage", handleNewMessage);
+        socket.on('emitDeleteMessage', handleDeleteMessage);
       return () => {
         socket.off("emitMessage", handleNewMessage);
+        socket.off('emitDeleteMessage', handleDeleteMessage);
       };
     }, [set, socket]);
     function handleLeftClick(event: React.MouseEvent<HTMLDivElement>) {
@@ -112,12 +132,10 @@
       if (match) {
         const idDynamicUser = match[1];
         const index = match[2];
-        if(idDynamicUser === idUser) {
           setIdMessageInfo({
             id: idDynamicUser,
             index: index,
           });
-        }
       } else {
         console.log("div não segue o padrão esperado.");
       }
@@ -129,7 +147,7 @@
         {chatArg.map((message, index) => (
           <div key={index}>
             <div onClick={handleLeftClick} className={`relative inline-flex justify-center id-${message.idUser}-${index}`}>
-              {idMessageInfo && idMessageInfo.id === message.idUser && idMessageInfo.index === String(index) ? <EmbedInfoMessage hideEmbed={setIdMessageInfo} /> : null }
+              {idMessageInfo && idMessageInfo.id === message.idUser && idMessageInfo.index === String(index) ? <EmbedInfoMessage setY={setY} setX={setX} setAccount={setAccount} showEmbedProfile={showEmbedProfile} setShowEmbedProfile={setShowEmbedProfile} idAccountOfMessage={idMessageInfo.id} id={idUser} idFriend={idFriend} index={index} hideEmbed={setIdMessageInfo} /> : null }
               <img
                 className="w-8 h-8 mr-2 rounded-full"
                 src={message.image.replace(/"/g, "")}
@@ -167,6 +185,7 @@
         {imageFocus ? <ImageFocus func={setImageFocus} srcImage={imageFocus} /> : null}
           </div>
         )}
+          {showEmbedProfile ? <EmbedProfile x={x} y={y} set={setShowEmbedProfile} account={account} /> : null}
       </div>
     );
   }
